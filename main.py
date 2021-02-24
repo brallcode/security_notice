@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import urllib
 import jsonpath
 from openpyxl import Workbook
+from openpyxl import load_workbook
 
 url = "https://cert.360.cn/warning/searchbypage?length=6&start=0"
 headers = {
@@ -65,27 +66,37 @@ for i in soup.find("h2").next_siblings:
     # print(i.get_text())
     notice_description = notice_description + i.get_text()
 # 获取重点漏洞 || 漏洞详情
+info = ''
 for i in soup.findAll("h2"):
     # 查找重点漏洞tag
     tag_zhongd = re.match(".*重点漏洞", i.string)
     # 获取终端漏洞描述
     if tag_zhongd is not None:
-        print("重点漏洞：")
         for j in i.next_siblings:
             if j.name == "h2":
                 break
-            print(j.get_text())
+            info = info + j.get_text()
         break
     # print(i.get_text())
     # 查找漏洞详情
     tag_loudongxq = re.match(".*漏洞详情", i.string)
     if tag_loudongxq is not None:
-        print(i.string)
         for j in i.next_siblings:
             if j.name == "h2":
                 break
-            print(j.get_text())
+            info = info + j.get_text()
 # 获取修复建议
+h2_jy = ''
+for i in soup.findAll("h2"):
+    h2_jy_name = re.match(".*修复建议", i.string)
+    if h2_jy_name is None:
+        continue
+    for j in i.next_siblings:
+        if j.name == 'h2':
+            break
+        h2_jy = h2_jy + j.get_text()
+"""    
+# 分别获取通用、临时修复建议
 for i in soup.findAll("h2"):
     h2_jy = re.match(".*修复建议", i.string)
     if h2_jy is None:
@@ -105,14 +116,22 @@ for i in soup.findAll("h2"):
         # print(i.get_text())
     # 临时修复建议
     # if h3_ls is not None:
-    notice = [notice_name, notice_description]
-    print(notice)
+"""
+
+# get release date: release_date
+release_date_tag = soup.find("div", {"class": "detail-news-date"})
+release_date_match = re.match("\d{4}-\d{1,2}-\d{1,2}", release_date_tag.string)
+release_date = release_date_match.group()
+
+# paqu xinxi list
+notice = [release_date, notice_name, tmp_url, notice_description, info, h2_jy]
+# print(notice)
 
 
 # init excel
 def excel_init(name):
     workbook = Workbook()
-    row_1 = ['预警时间', '预警通报名称', '简述', '修复建议']
+    row_1 = ['预警时间', '预警通报名称', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
     # worksheet = workbook.active
     ws1 = workbook.create_sheet('sheet1')
     ws1.append(row_1)
@@ -122,3 +141,7 @@ def excel_init(name):
 excel_name = '360cert预警通报统计.xlsx'
 if not os.path.exists(excel_name):
     excel_init(excel_name)
+workbook = load_workbook(excel_name)
+worksheet = workbook['sheet1']
+worksheet.append(notice)
+workbook.save(excel_name)
