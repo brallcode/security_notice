@@ -1,0 +1,24 @@
+{
+  "id": 196,
+  "is_del": false,
+  "title": "谷歌 V8 JavaScript引擎堆溢出漏洞安全风险通告",
+  "author": "CERT",
+  "category": "风险通告",
+  "read_num": 29,
+  "digest": "近日，奇安信 CERT 监测到谷歌官方发布关于 Chrome 浏览器漏洞补丁，漏洞编号 CVE-2021-21148 ，漏洞影响版本低于 88.0.4324.150 的 Chrome 浏览器以及基于 Chromium 开发的版本低于 88.0.705.63 的 Microsoft Edge 浏览器。如若成功利用此漏洞，可能造成远程代码执行。目前更多细节暂未披露，但据传该漏洞正在被广泛利用。",
+  "recommend_hot": 0,
+  "create_time": "2021-02-06 14:17:13",
+  "update_time": "2021-02-24 15:15:46",
+  "last_update_time": "2021-02-07 14:30:45",
+  "photo_ids": [
+    2217,
+    2218,
+    2219,
+    2220,
+    2222,
+    2221
+  ],
+  "article_content": "## 安全通告\n近日，奇安信 CERT 监测到谷歌官方发布关于 Chrome 浏览器漏洞补丁，漏洞编号 CVE-2021-21148 ，漏洞影响版本低于 88.0.4324.150 的 Chrome 浏览器以及基于 Chromium 开发的版本低于 88.0.705.63 的 Microsoft Edge 浏览器。如若成功利用此漏洞，可能造成远程代码执行。目前更多细节暂未披露，但据传该漏洞正在被广泛利用。鉴于漏洞危害较大，建议用户及时安装更新补丁。\n\n|细节是否公开|PoC状态|EXP状态|在野利用|\n| -- | -- | -- | -- |\n|否|未知|未知|已发现|\n\n## 漏洞描述\n近日，谷歌官方发布最新的 Chrome 正式版本（88.0.4324.150），修复了关于谷歌 V8 JavaScript 引擎的堆溢出漏洞（CVE-2021-21148），该漏洞影响 Chrome 浏览器以及基于 Chromium 开发的版本低于 88.0.705.63 的 Microsoft Edge 浏览器。如若成功利用此漏洞，可能造成远程代码执行。据传该漏洞正在被广泛利用，目前暂未有更多细节披露，建议用户及时安装更新补丁。\n\n## 风险等级\n奇安信 CERT风险评级为：高危\n风险等级：蓝色（一般事件）\n\n## 影响范围\nChrome < 88.0.4324.150\nMicrosoft Edge < 88.0.705.63\n\n## 处置建议\n1、升级Chrome 浏览器至 88.0.4324.150 版本：\nChrome 浏览器中打开 chrome://settings/help ，检查更新，升级，重新启动浏览器即可。\n2、更新 Microsoft Edge 浏览器至88.0.705.63版本：\n Microsoft Edge 浏览器中打开edge://settings/help ，检查更新，升级，重新启动浏览器即可。\n或直接下载最新版本：https://www.microsoftedgeinsider.com/en-gb/download\n\n## 产品解决方案\n**|奇安信天擎终端安全管理系统解决方案**\n一、修补方案\n对于安装Google Chrome浏览器和Microsoft Edge（Chrome核）的客户，需要尽快升级至以下版本：\n|浏览器|版本信息|升级方式|\n| -- | -- | -- |\n|Google Chrome|88.0.4324.105|企业软件管家\n或 手动升级|\n|Microsoft Edge（Chrome核）|88.0.705.63|手动升级|\n参考信息：\nhttps://chromereleases.googleblog.com/2021/02/stable-channel-update-for-desktop_4.html\nhttps://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-21148\n二、升级新版\n1. Google Chrome浏览器\n1.1 通过“天擎企业软件管家”升级\n“天擎企业软件管家”已推送Google Chrome浏览器最新版本，升级安装即可。\n ![1.png](https://lxs3.b.qianxin.com/Webportal-image/2217)\n ![2.png](https://lxs3.b.qianxin.com/Webportal-image/2218)\n1.2 手动升级\n通过“Google Chrome”菜单选择“帮助”->“关于Google Chrome(G)”进行手动升级。\n ![3.png](https://lxs3.b.qianxin.com/Webportal-image/2219)\n ![4.png](https://lxs3.b.qianxin.com/Webportal-image/2220)\n2. Microsoft Edge（Chrome核）浏览器\n2.1\t手动升级\n通过“Microsoft Edge”菜单选择“帮助和反馈”->“关于Microsoft Edge(M)”进行手动升级。\n ![5.png](https://lxs3.b.qianxin.com/Webportal-image/2221)\n ![6.png](https://lxs3.b.qianxin.com/Webportal-image/2222)\n\n## 参考资料\n[1]https://thehackernews.com/2021/02/new-chrome-browser-0-day-under-active.html\n[2] https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-21148",
+  "title_photo_id": 2223,
+  "title_photo_url": "https://lxs3.b.qianxin.com/Webportal-image/2223"
+}
