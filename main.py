@@ -1,6 +1,8 @@
 import os
 import re
 import json
+import time
+
 from bs4 import BeautifulSoup
 import urllib
 import jsonpath
@@ -184,4 +186,18 @@ def main_360cert():
     workbook.save(excel_name)
 
 
-main_360cert()
+# main_360cert()
+
+
+def main_nox():
+    # nox安全监测平台（奇安信cert）
+    # 首页通告信息列表接口
+    url = 'https://nox.qianxin.com/api/web/portal/article/info/list'
+    # response = urllib.request.urlopen(url=url, headers=headers)
+    # print(response.read())
+    # 构造cookie
+    t = int(time.time())
+    cookie = "Hm_lvt_9ecbd54546eb318ba9fbdfb7dfee53da={}; Hm_lpvt_9ecbd54546eb318ba9fbdfb7dfee53da={}".format(t, t)
+
+
+main_nox()
