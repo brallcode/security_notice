@@ -188,6 +188,58 @@ def main_360cert():
 
 # main_360cert()
 
+def split_one_enter(str1):
+    return str1.split('\n', maxsplit=1)[1]
+
+
+def get_nox_detail(id_detail):
+    headers_detail = {
+        'Host': 'nox.qianxin.com',
+        'User-Agent': 'Mozilla/5.0(X11; Linux x86_64; rv: 85.0) Gecko/20100101 Firefox/85.0',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en; q = 0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': '12',
+        'Origin': 'https://nox.qianxin.com',
+        'Connection': 'close',
+        'Referer': 'https://nox.qianxin.com/article/' + str(id_detail),
+        'Cache-Control': 'max-age=0'
+    }
+    # print(headers_detail['Referer'])
+    # data
+    data_detail = {'id': str(id_detail)}
+    # url
+    url_detail = 'https://nox.qianxin.com/api/web/portal/article/info/show'
+    reponse_detail = requests.post(url_detail, headers=headers_detail, data=json.dumps(data_detail))
+    # print(reponse_detail.text)
+    # format to json
+    reponse_detail_json = json.loads(reponse_detail.text)
+    # get data json
+    detail_data = jsonpath.jsonpath(reponse_detail_json, '$[data]')[0]
+    detail_list = detail_data['article_content'].split('##')
+    # get brief introduction || security notice
+    # 删除开头‘安全通告’
+    brief_introduction = split_one_enter(detail_list[1])
+    # 获取漏洞描述
+    vulnerability_des = split_one_enter(detail_list[2])
+    # 风险等级
+    risk_level = split_one_enter(detail_list[3])
+    # 影响范围
+    sphere_of_influence = split_one_enter(detail_list[4])
+    # 处置建议
+    disposal_recom = split_one_enter(detail_list[5])
+    # 访问链接
+    access_link = 'https://nox.qianxin.com/article/' + str(id_detail)
+    # 最近更新时间
+    last_update_time = detail_data['last_update_time']
+    # 转换成时间戳
+    time_array = time.strptime(last_update_time, "%Y-%m-%d %H:%M:%S")
+    timestamp = time.mktime(time_array)
+    # 标题
+    title = detail_data['title']
+    print(timestamp)
+
 
 def main_nox():
     # nox安全监测平台（奇安信cert）
@@ -226,15 +278,13 @@ def main_nox():
     # print(id_list)
     # print(title_list)
 
-    # print(reponse_list.text.encode('utf-8').decode('unicode_escape'))
-    """
-    params_tmp1 = json.dumps(data_list)
-    params_list = bytes(params_tmp1)
-    # params_list = urllib.parse.urlencode(params_tmp1).encode(encoding='utf-8')
-    req = urllib.request.Request(url=url, data=params_list, headers=headers_list)
-    reponse_list = urllib.request.urlopen(req).read()
-    print(reponse_list)
-    """
+    # test get_nox_detail()
+    get_nox_detail(id_list[0])
 
 
 main_nox()
+
+# 腾讯威胁通告: https://s.tencent.com/research/bsafe
+# 绿盟威胁通告： http://blog.nsfocus.net/category/threat-alert
+# 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
+# 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
