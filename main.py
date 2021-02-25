@@ -198,6 +198,43 @@ def main_nox():
     # 构造cookie
     t = int(time.time())
     cookie = "Hm_lvt_9ecbd54546eb318ba9fbdfb7dfee53da={}; Hm_lpvt_9ecbd54546eb318ba9fbdfb7dfee53da={}".format(t, t)
+    # HTTP header
+    # header list
+    headers_list = {
+        'Host': 'nox.qianxin.com',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': '54',
+        'Origin': 'https://nox.qianxin.com',
+        'Connection': 'close',
+        'Referer': 'https://nox.qianxin.com/risk',
+        'Cache-Control': 'max-age=0'
+    }
+    # data list
+    data_list = {"page_no": 1, "page_size": 10, "category": "风险通告"}
+    reponse_list = requests.post(url, headers=headers_list, data=json.dumps(data_list))
+    # 将将响应文本转换为json格式
+    data_list_json = json.loads(reponse_list.text)
+    # print(data_list_json)
+    # 获取id值，用于拼接访问通告详情的url
+    id_list = jsonpath.jsonpath(data_list_json, "$..id")
+    # 获取通告title
+    title_list = jsonpath.jsonpath(data_list_json, '$..title')
+    # print(id_list)
+    # print(title_list)
+
+    # print(reponse_list.text.encode('utf-8').decode('unicode_escape'))
+    """
+    params_tmp1 = json.dumps(data_list)
+    params_list = bytes(params_tmp1)
+    # params_list = urllib.parse.urlencode(params_tmp1).encode(encoding='utf-8')
+    req = urllib.request.Request(url=url, data=params_list, headers=headers_list)
+    reponse_list = urllib.request.urlopen(req).read()
+    print(reponse_list)
+    """
 
 
 main_nox()
