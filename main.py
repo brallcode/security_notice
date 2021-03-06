@@ -1,3 +1,4 @@
+import gzip
 import os
 import re
 import json
@@ -282,25 +283,34 @@ def main_nox():
     get_nox_detail(id_list[0])
 
 
-main_nox()
+# main_nox()
 
 """
 腾讯威胁通告: https://s.tencent.com/research/bsafe
-通告信息在每个div标签 class="newsli"中
+通报列表在标签 div class=newslist-wrap bsafe clearfix中
 """
-
-
 def main_tencent():
     headers = {
-        "Host": "s.tencent.com",
-        "User-Agent": "Mozilla/5.0(X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Accept-Encoding": "gzip, deflate",
-        "Connection": "close",
-        "Upgrade-Insecure-Requests": "1"
+        'Host': 's.tencent.com',
+        'User-Agent': 'Mozilla/5.0(Windows NT 10.0; Win64; x64; rv: 85.0) Gecko/20100101 Firefox/85.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'close',
+        'Upgrade-Insecure-Requests': '1',
+        'Cache-Control': 'max-age=0'
     }
+    url = 'https://s.tencent.com/research/bsafe'
+    req = urllib.request.Request(url=url, headers=headers)
+    reponse = urllib.request.urlopen(req)
+    # 二进制转化成文本
+    # print(gzip.decompress(reponse.read()).decode("utf8"))
+    soup = BeautifulSoup(gzip.decompress(reponse.read()).decode('utf-8'), features='html.parser')
+    news = soup.find_all('div', {'class': 'newsli'})
+    # print(type(news))
 
-    # 绿盟威胁通告： http://blog.nsfocus.net/category/threat-alert
-    # 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
-    # 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
+
+main_tencent()
+# 绿盟威胁通告： http://blog.nsfocus.net/category/threat-alert
+# 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
+# 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
