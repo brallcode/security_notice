@@ -11,6 +11,8 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 import requests
 
+from excel_operation import excel_add
+
 headers = {
     'Host': 'cert.360.cn',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
@@ -342,7 +344,9 @@ def main_tencent():
         break
 
 
-main_tencent()
+# main_tencent()
 # 绿盟威胁通告： http://blog.nsfocus.net/category/threat-alert
 # 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
 # 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
+
+excel_add()
