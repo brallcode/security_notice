@@ -306,8 +306,40 @@ def main_tencent():
     # 二进制转化成文本
     # print(gzip.decompress(reponse.read()).decode("utf8"))
     soup = BeautifulSoup(gzip.decompress(reponse.read()).decode('utf-8'), features='html.parser')
-    news = soup.find_all('div', {'class': 'newsli'})
-    # print(type(news))
+    # print(type(soup))
+    # news = soup.find_all('div', {'class': 'newsli'})
+
+    # 获取发布时间
+    date_release = soup.find('div', {'class': 'time'}).string
+    # 转换成时间数组
+    date_release_array= time.strptime(date_release, "%Y-%m-%d %H:%M:%S")
+    # 转换成时间戳
+    timestamp = time.mktime(date_release_array)
+    print(timestamp)
+
+    # 公告简介在 div class=newsli中
+    for tag in soup.find_all('div', {'class': 'newsli'}):
+        # 获取title
+        title = tag.div.h3.a['title']
+        # 获取访问链接
+        url_index = 'https://s.tencent.com/' + tag.div.h3.a['href']
+        req_index = urllib.request.Request(url=url_index, headers=headers)
+        reponse_index = urllib.request.urlopen(req_index)
+        soup_index = BeautifulSoup(gzip.decompress(reponse_index.read()).decode('utf-8'), features='html.parser')
+        for tag in soup_index.find_all('p', {'style': 'margin:0in;font-size:11.0pt;'}):
+            tag.get_text()
+
+        # 获取简述
+        des = soup_index.find('div', {'class': 'desc'})
+
+        # 获取漏洞详情
+        vul_details = ''
+        tag_newsword = soup_index.find('div', {'class', 'bsafe-news'})
+        for tag_p in tag_newsword.children:
+            if tag_p.string is None:
+                if tag_p.get_text() == '\n漏洞详情：\n':
+                    vul_details = tag_p.next_sibling.next_sibling.get_text()
+        break
 
 
 main_tencent()
