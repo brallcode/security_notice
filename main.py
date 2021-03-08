@@ -166,7 +166,9 @@ def main_360cert():
     for i in url_infos:
         notices.append(get_text(i))
     # print(len(notices))
+    return notices
 
+    """
     excel_name = '360cert预警通报统计.xlsx'
     if not os.path.exists(excel_name):
         excel_init(excel_name)
@@ -187,6 +189,7 @@ def main_360cert():
             worksheet.append(i)
     # worksheet.append(notice)
     workbook.save(excel_name)
+    """
 
 
 # main_360cert()
@@ -241,7 +244,9 @@ def get_nox_detail(id_detail):
     timestamp = time.mktime(time_array)
     # 标题
     title = detail_data['title']
-    print(timestamp)
+    # row_1 = ['预警时间', '预警通报名称', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
+    notice = [last_update_time, title, access_link, '', vulnerability_des, disposal_recom]
+    return notice
 
 
 def main_nox():
@@ -282,15 +287,23 @@ def main_nox():
     # print(title_list)
 
     # test get_nox_detail()
-    get_nox_detail(id_list[0])
+    # get_nox_detail(id_list[0])
+
+    # get notices
+    notices = []
+    for i in id_list:
+        notices.append(get_nox_detail(i))
+    return notices
 
 
-# main_nox()
+# print(main_nox())
 
 """
 腾讯威胁通告: https://s.tencent.com/research/bsafe
 通报列表在标签 div class=newslist-wrap bsafe clearfix中
 """
+
+
 def main_tencent():
     headers = {
         'Host': 's.tencent.com',
@@ -314,10 +327,12 @@ def main_tencent():
     # 获取发布时间
     date_release = soup.find('div', {'class': 'time'}).string
     # 转换成时间数组
-    date_release_array= time.strptime(date_release, "%Y-%m-%d %H:%M:%S")
+    date_release_array = time.strptime(date_release, "%Y-%m-%d %H:%M:%S")
     # 转换成时间戳
     timestamp = time.mktime(date_release_array)
-    print(timestamp)
+    # print(timestamp)
+
+    notices = []
 
     # 公告简介在 div class=newsli中
     for tag in soup.find_all('div', {'class': 'newsli'}):
@@ -332,7 +347,7 @@ def main_tencent():
             tag.get_text()
 
         # 获取简述
-        des = soup_index.find('div', {'class': 'desc'})
+        des = soup_index.find('div', {'class': 'desc'}).get_text()
 
         # 获取漏洞详情
         vul_details = ''
@@ -341,12 +356,19 @@ def main_tencent():
             if tag_p.string is None:
                 if tag_p.get_text() == '\n漏洞详情：\n':
                     vul_details = tag_p.next_sibling.next_sibling.get_text()
-        break
+                    break
+
+        # row_1 = ['预警时间', '预警通报名称', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
+        notices.append([date_release, title, url_index, des, vul_details, ''])
+
+    return notices
 
 
-# main_tencent()
+# print(main_tencent()[0])
 # 绿盟威胁通告： http://blog.nsfocus.net/category/threat-alert
 # 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
 # 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
 
-excel_add()
+excel_add(main_360cert())
+excel_add(main_nox())
+excel_add(main_tencent())

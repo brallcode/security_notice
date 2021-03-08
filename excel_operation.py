@@ -20,10 +20,13 @@ def init_excel():
     workbook.save(excel_name)
 
 
-def excel_add():
+def excel_add(notices):
     global excel_name
     if not os.path.exists(excel_name):
         init_excel()
     workbook = load_workbook(excel_name)
     global worksheet_name
     worksheet = workbook[worksheet_name]
+    for i in notices:
+        worksheet.append(i)
+    workbook.save(excel_name)
