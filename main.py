@@ -10,8 +10,8 @@ import jsonpath
 from openpyxl import Workbook
 from openpyxl import load_workbook
 import requests
+import excel_operation
 
-from excel_operation import excel_add
 
 headers = {
     'Host': 'cert.360.cn',
@@ -105,11 +105,13 @@ def get_text(tmp_url):
 
     # get release date: release_date
     release_date_tag = soup.find("div", {"class": "detail-news-date"})
-    release_date_match = re.match("\d{4}-\d{1,2}-\d{1,2}", release_date_tag.string)
-    release_date = release_date_match.group()
+    # release_date_match = re.match("\d{4}-\d{1,2}-\d{1,2}", release_date_tag.string)
+    # release_date = release_date_match.group()
+    release_date = release_date_tag.string + ':00'
 
     # paqu xinxi list
-    notice = [release_date, notice_name, tmp_url, notice_description, info, h2_jy]
+    # row_1 = ['预警时间', '预警通报名称', '通报来源', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
+    notice = [release_date, notice_name, '360cert', tmp_url, notice_description, info, h2_jy]
 
     # print(notice)
     return notice
@@ -239,13 +241,15 @@ def get_nox_detail(id_detail):
     access_link = 'https://nox.qianxin.com/article/' + str(id_detail)
     # 最近更新时间
     last_update_time = detail_data['last_update_time']
+    # 创建时间
+    create_time = detail_data['create_time']
     # 转换成时间戳
     time_array = time.strptime(last_update_time, "%Y-%m-%d %H:%M:%S")
     timestamp = time.mktime(time_array)
     # 标题
     title = detail_data['title']
-    # row_1 = ['预警时间', '预警通报名称', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
-    notice = [last_update_time, title, access_link, '', vulnerability_des, disposal_recom]
+    # row_1 = ['预警时间', '预警通报名称', '通报来源', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
+    notice = [create_time, title, '奇安信NOX', access_link, '', vulnerability_des, disposal_recom]
     return notice
 
 
@@ -325,11 +329,11 @@ def main_tencent():
     # news = soup.find_all('div', {'class': 'newsli'})
 
     # 获取发布时间
-    date_release = soup.find('div', {'class': 'time'}).string
+    # date_release = soup.find('div', {'class': 'time'}).string
     # 转换成时间数组
-    date_release_array = time.strptime(date_release, "%Y-%m-%d %H:%M:%S")
+    # date_release_array = time.strptime(date_release, "%Y-%m-%d %H:%M:%S")
     # 转换成时间戳
-    timestamp = time.mktime(date_release_array)
+    # timestamp = time.mktime(date_release_array)
     # print(timestamp)
 
     notices = []
@@ -349,6 +353,9 @@ def main_tencent():
         # 获取简述
         des = soup_index.find('div', {'class': 'desc'}).get_text()
 
+        # 获取公告发布时间
+        release_date = soup_index.find('div', {'class': 'time'}).string
+
         # 获取漏洞详情
         vul_details = ''
         tag_newsword = soup_index.find('div', {'class', 'bsafe-news'})
@@ -358,10 +365,34 @@ def main_tencent():
                     vul_details = tag_p.next_sibling.next_sibling.get_text()
                     break
 
-        # row_1 = ['预警时间', '预警通报名称', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
-        notices.append([date_release, title, url_index, des, vul_details, ''])
+        # row_1 = ['预警时间', '预警通报名称', '通报来源', '通报链接', '简述', '重点漏洞或漏洞详情', '修复建议']
+        notices.append([release_date, title, '腾讯', url_index, des, vul_details, ''])
 
     return notices
+
+def main_cstis():
+    # 工业和信息化部网络安全威胁和漏洞信息共享平台
+    # https://www.cstis.cn/cate/8e2724d2-d81c-88b4-ac4c-495cd2c4cbfc
+    headers = {
+        'Host': 'www.cstis.cn',
+        'User-Agent': 'Mozilla/5.0(Windows NT 10.0; Win64; x64; rv: 85.0) Gecko/20100101 Firefox/85.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'close',
+        'Upgrade-Insecure-Requests': '1',
+    }
+    url = 'https://www.cstis.cn/cate/8e2724d2-d81c-88b4-ac4c-495cd2c4cbfc'
+    req = urllib.request.Request(url=url, headers=headers)
+    reponse = urllib.request.urlopen(req)
+    soup = BeautifulSoup(gzip.decompress(reponse.read()).decode('utf-8'), features='html.parser')
+
+    notices = []
+    for tag in soup.find_all('li', {'class': 'first clearfix'}):
+        url_index = tag.a['href']
+        req_index = urllib.request.Request(url=url_index, headers=headers)
+        reponse_index = urllib.request.urlopen(req_index)
+        soup_index = BeautifulSoup(gzip.decompress(reponse_index.read()).decode('utf-8'), features='html.parser')
 
 
 # print(main_tencent()[0])
@@ -369,6 +400,20 @@ def main_tencent():
 # 启明安全通告： https://www.venustech.com.cn/new_type/aqtg/
 # 深信服漏洞预警： https://sec.sangfor.com.cn/wiki-safe-events
 
-excel_add(main_360cert())
-excel_add(main_nox())
-excel_add(main_tencent())
+# excel_add(main_360cert())
+# excel_add(main_nox())
+# excel_add(main_tencent())
+
+
+def main():
+    main_cstis()
+    """
+    notices = main_360cert()
+    for i in main_nox():
+        notices.append(i)
+    for i in main_tencent():
+        notices.append(i)
+    excel_operation.excel_add(notices)
+    """
+
+main()
